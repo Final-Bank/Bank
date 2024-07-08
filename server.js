@@ -24,9 +24,9 @@ app.use(cookieParser());
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// // 템플릿 엔진 설정
-// app.set('view engine', 'ejs');
-// app.set('views', path.join(__dirname, 'views'));
+// 템플릿 엔진 설정
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 app.get('/', (req, res) => {
   res.render('index.ejs');

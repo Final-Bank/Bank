@@ -80,16 +80,49 @@
       $(document).ready(function() {
         const uid = $.cookie("uid");
         if (uid) {
-          $("#loginSpan").html(`${uid} <button onclick="logout()" class="btn btn-warning">logout</button>`);
-      }
+                $("#loginSpan").html(`
+                    ${uid} 
+                    <button onclick="logout()" class="btn btn-warning">Logout</button>
+                    <button onclick="deleteAccount()" class="btn btn-danger">회원탈퇴</button>
+                `);
+        }
       });
 
+      // 로그아웃 
       function logout() {
         $.removeCookie("uid", { path: "/" });
         location.href = "/account/logout";
       }
+
+      // 회원 탈퇴
+      function deleteAccount() {
+            const password = prompt("비밀번호를 입력해주세요:");
+            if (password) {
+                if (confirm("정말 회원탈퇴를 하시겠습니까?")) {
+                    $.ajax({
+                        url: '/delete-account',
+                        method: 'POST',
+                        data: { userid: $.cookie("uid"), password: password },
+                        success: function(response) {
+                            // 서버에서 성공 응답을 받은 경우
+                            if (response.success) {
+                                alert("회원탈퇴가 완료되었습니다.");
+                                $.removeCookie("uid", { path: "/" });
+                                location.href = "/";
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function() {
+                            alert("회원탈퇴 중 오류가 발생했습니다.");
+                        }
+                    });
+                }
+            }
+        }
+
       document.getElementById('adminBoardLink').addEventListener('click', function(event) {
-    event.preventDefault(); // 기본 클릭 이벤트 제거
+      event.preventDefault(); // 기본 클릭 이벤트 제거
     
     // prompt 창 띄우기
     const adminCode = prompt('관리자 인증코드를 입력하세요.');
@@ -123,7 +156,8 @@ document.getElementById('productAdminLink').addEventListener('click', function(e
         window.location.href = '/'; // 적절한 홈 페이지 URL로 변경
     }
 });
-function refreshCaptcha() {
+
+    function refreshCaptcha() {
       $('#captchaImg').attr('src', '/captcha?' + Date.now());
     }
     </script>
